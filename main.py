@@ -1,6 +1,7 @@
 import re
 USERS = {}
 
+
 def input_error(func):
     def inner(*args):
         try:
@@ -13,10 +14,13 @@ def input_error(func):
             return 'Element is not present'
     return inner
 
+
 def hello_message(*_):
     return "Hello! How can I help you?"
 
+
 PHONE_PATTERN = re.compile(r'^\+?\d{10,12}$')
+
 
 @input_error
 def add_user(args):
@@ -33,14 +37,15 @@ def add_user(args):
         USERS[name] = phone
         return f'User {name} added!'
 
+
 @input_error
-def change_phone(args):
-    if args[0] not in USERS:
+def change_phone(name, number):
+    if name not in USERS:
         return "There is no such contact!"
-    elif not PHONE_PATTERN.match(args[1]):
+    name, phone = name, number
+    if not PHONE_PATTERN.match(phone):
         return "Check if the number is correct!"
     else:
-        name, phone = args
         USERS[name] = phone
         return f'User {name} changed!'
 
@@ -75,18 +80,20 @@ def unknown_command(*_):
             show user's phone: phone 'name'
             show user name: phone 'phone'"""
 
+
 def help_command(*_):
-    return """Please select one of the commands:
-                add user: add
-                change user: change
-                show all contacts: show all
-                show user's phone: phone 'name'
-                show user name: phone 'phone'"""
+    return """Please select one of the commands:    
+            add user: add
+            change user: change
+            show all contacts: show all
+            show user's phone: phone 'name'
+            show user name: phone 'phone'"""
 
 
-def exit(*_):
+def exit_message(*_):
     # print('Good bye!')
     return None
+
 
 HANDLERS = {
     'hello': hello_message,
@@ -95,10 +102,11 @@ HANDLERS = {
     'show all': show_all,
     'phone': show_phone,
     'help': help_command,
-    'exit': exit,
-    'goodbye': exit,
-    'close': exit,
+    'exit': exit_message,
+    'goodbye': exit_message,
+    'close': exit_message,
 }
+
 
 def main():
     while True:
@@ -114,15 +122,19 @@ def main():
                 args = args[1:]
             handler = HANDLERS.get(command.lower(), unknown_command)
 
-        result = handler(args)
+        if handler == change_phone:
+            result = handler(*args)
+        else:
+            result = handler(args)
+
         if not result:
             break
         print(result)
+
     print('Good bye!')
 
 
 if __name__ == "__main__":
     main()
-
 
 
