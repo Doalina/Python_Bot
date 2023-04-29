@@ -68,20 +68,16 @@ def show_phone(name):
     return f'No contact found for {name}'
 
 
-def unknown_command(*_):
-    return """Please select one of the commands:
-            add user: add
-            change user: change
-            show all contacts: show all
-            show user's phone: phone 'name''"""
+def unknown_command(command):
+    return f"Unknown command {command}\n{help_command()}"
 
 
-def help_command(*_):
-    return """Please select one of the commands:    
-            add user: add
-            change user: change
-            show all contacts: show all
-            show user's phone: phone 'name'"""
+def help_command():
+    return ("Please select one of the commands:\n"
+            "add user: add\n"
+            "change user: change\n"
+            "show all contacts: show all\n"
+            "show user's phone: phone 'name'\n")
 
 
 def exit_message():
@@ -92,7 +88,7 @@ HANDLERS = {
     'hello': hello_message,
     'add': add_user,
     'change': change_phone,
-    'show all': show_all,
+    'showall': show_all,
     'phone': show_phone,
     'help': help_command,
     'exit': exit_message,
@@ -105,20 +101,22 @@ def main():
     while True:
         user_input = input('Please enter Command: ')
         command, *args = user_input.split()
-        command = command.lstrip()
+        command = command.strip()
 
         try:
             handler = HANDLERS[command.lower()]
         except KeyError:
-            if args:
-                command = command + ' ' + args[0]
-                args = args[1:]
-            handler = HANDLERS.get(command.lower(), unknown_command)
+            handler = unknown_command
+            args = command
 
-        result = handler(*args)
+        if not args:
+            result = handler()
+        else:
+            result = handler(*args)
 
         if not result:
             break
+
         print(result)
 
     print('Good bye!')
@@ -126,5 +124,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
 
 
