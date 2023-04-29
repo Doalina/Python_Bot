@@ -1,4 +1,5 @@
 import re
+
 USERS = {}
 
 
@@ -12,10 +13,11 @@ def input_error(func):
             return 'Check the number or name please'
         except IndexError:
             return 'Element is not present'
+
     return inner
 
 
-def hello_message(*_):
+def hello_message():
     return "Hello! How can I help you?"
 
 
@@ -23,11 +25,9 @@ PHONE_PATTERN = re.compile(r'^\+?\d{10,12}$')
 
 
 @input_error
-def add_user(args):
-    if not args[0].isalpha() or not PHONE_PATTERN.match(args[1]):
+def add_user(name, phone):
+    if not name.isalpha() or not PHONE_PATTERN.match(phone):
         return 'Please enter the correct number or contact name'
-
-    name, phone = args[0], args[1]
 
     if name in USERS:
         return f'User {name} already exists'
@@ -39,10 +39,9 @@ def add_user(args):
 
 
 @input_error
-def change_phone(name, number):
+def change_phone(name, phone):
     if name not in USERS:
         return "There is no such contact!"
-    name, phone = name, number
     if not PHONE_PATTERN.match(phone):
         return "Check if the number is correct!"
     else:
@@ -51,7 +50,7 @@ def change_phone(name, number):
 
 
 @input_error
-def show_all(*_):
+def show_all():
     if not USERS:
         return 'There are no saved contacts yet'
     message = ''
@@ -61,15 +60,12 @@ def show_all(*_):
 
 
 @input_error
-def show_phone(args):
-    if args and len(args) == 1:
-        query = args[0]
-        for name, phone in USERS.items():
-            if name.lower() == query.lower() or phone == query:
-                return f'{name}: {phone}'
-        return f'No contact found for {query}'
-    else:
-        return 'Please enter a valid contact query'
+def show_phone(name):
+    for n, p in USERS.items():
+        if n.lower() == name.lower():
+            return f"{name}'s phone number is {p}"
+
+    return f'No contact found for {name}'
 
 
 def unknown_command(*_):
@@ -77,8 +73,7 @@ def unknown_command(*_):
             add user: add
             change user: change
             show all contacts: show all
-            show user's phone: phone 'name'
-            show user name: phone 'phone'"""
+            show user's phone: phone 'name''"""
 
 
 def help_command(*_):
@@ -86,12 +81,10 @@ def help_command(*_):
             add user: add
             change user: change
             show all contacts: show all
-            show user's phone: phone 'name'
-            show user name: phone 'phone'"""
+            show user's phone: phone 'name'"""
 
 
-def exit_message(*_):
-    # print('Good bye!')
+def exit_message():
     return None
 
 
@@ -122,10 +115,7 @@ def main():
                 args = args[1:]
             handler = HANDLERS.get(command.lower(), unknown_command)
 
-        if handler == change_phone:
-            result = handler(*args)
-        else:
-            result = handler(args)
+        result = handler(*args)
 
         if not result:
             break
