@@ -40,18 +40,17 @@ def add_user(name, phone) -> str:
     return USERS.add_record(name, phone)
 
 
-
 @input_error
 def change_phone(name, phone) -> str:
     if name not in USERS.data:
         return "There is no such contact!"
 
-    new_phone = ''.join(filter(str.isdigit, phone))  # Удаляем все символы, кроме цифр
+    new_phone = ''.join(filter(str.isdigit, phone))
 
     if not new_phone:
         return "Please enter a valid phone number."
 
-    USERS.data[name].phones = {Phone(new_phone)}  # Создаем новое множество с одним номером телефона
+    USERS.data[name].phones = {Phone(new_phone)}
 
     return f"Phone number for contact '{name}' has been changed to '{new_phone}'."
 
@@ -126,7 +125,7 @@ def main():
     print('Good bye!')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
 
 
