@@ -39,7 +39,7 @@ class Record:
         if name not in self.data:
             return "There is no such contact!"
         else:
-            record = self.data[name]
+            record = self
             record.phones = {Phone(phone)}
             return f'Phone number for {name} has been changed!'
 
@@ -54,6 +54,7 @@ class Record:
 
 
 class AddressBook(UserDict):
+
     def add_record(self, name, phone) -> str:
         name_field = Name(name)
         phone_field = Phone(phone)
@@ -67,14 +68,25 @@ class AddressBook(UserDict):
                 return 'A contact with the same phone number already exists'
 
         record = Record(name_field, phone_field)
+        message = record.add_phone(phone_field)
         self.data[name_field.value] = record
-        message = 'Record added to the address book!'
         return message
 
-    def del_record(self, name) -> str:
+    def change_record_phone(self, name, phone) -> str:
         if name in self.data:
-            self.data.pop(name)
-            message = 'Record deleted from the address book.'
+            record = self.data[name]
+            message = record.change_phone(name, phone)
+        else:
+            message = "There is no such contact!"
+        return message
+
+    def delete_record(self, name) -> str:
+        if name in self.data:
+            record = self.data[name]
+            message = record.delete_phone(name)
+            if message == 'Phone deleted.' and len(record.phones) == 0:
+                self.data.pop(name)
+                message = 'Record deleted from the address book.'
         else:
             message = 'Record not found in the address book.'
         return message
